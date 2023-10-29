@@ -1,0 +1,67 @@
+.gradle
+*.iml
+/local.properties
+.idea/**
+!.idea/codeStyleSettings.xml
+.DS_Store
+build
+google-services.json
+!/library/google-services.json
+
+crashlytics-build.properties
+auth/src/main/res/values/com_crashlytics_export_strings.xml
+*.log
+# Android Studio
+/.idea/
+/.gradle/
+
+# Compiled files
+/build/
+/app/build/
+/captures/
+
+# Gradle files
+.gradle/
+/build-cache/
+/.cxx/
+
+# External native build folder generated in Android Studio 2.2 and later
+/.externalNativeBuild
+
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+
+# Folder config file
+Desktop.ini
+
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
+
+# Android Studio Navigation editor temp files
+.navigation/
+
+# Proguard
+/proguard/
+
+# Gradle wrapper
+/gradle/wrapper/gradle-wrapper.properties
+/gradle/wrapper/gradle-wrapper.jar
+
+# Tutorials
+/.idea/libraries/
+/.idea/modules.xml
+/.idea/workspace.xml
+/.idea/tasks.xml
+/.idea/.name
+/.idea/compiler.xml
+/.idea/navEditor.xml
+/.idea/assetWizardSettings.xml
+
+# User-specific files
+/.idea/misc.xml
+/.idea/vcs.xml
+.ideaVersion
+
+# Keystore files
+/keystores/
