@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="weather_options">
+        <item>Current Weather</item>
+        <item>5 Day / 3 Hour Forecast</item>
+    </string-array>
+</resources>

@@ -31,6 +31,7 @@ import com.firebase.uidemo.database.realtime.FirebaseDbPagingActivity;
 import com.firebase.uidemo.database.realtime.RealtimeDbChatActivity;
 import com.firebase.uidemo.databinding.ActivityChooserBinding;
 import com.firebase.uidemo.storage.ImageActivity;
+import com.firebase.uidemo.weather.WeatherActivity;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -65,6 +66,7 @@ public class ChooserActivity extends AppCompatActivity {
             extends RecyclerView.Adapter<ActivityStarterHolder> {
         private static final Class[] CLASSES = new Class[]{
                 AuthUiActivity.class,
+                WeatherActivity.class,
                 AnonymousUpgradeActivity.class,
                 FirestoreChatActivity.class,
                 FirestorePagingActivity.class,
@@ -75,6 +77,7 @@ public class ChooserActivity extends AppCompatActivity {
 
         private static final int[] DESCRIPTION_NAMES = new int[]{
                 R.string.title_auth_activity,
+                R.string.title_weather_activity,
                 R.string.title_anonymous_upgrade,
                 R.string.title_firestore_activity,
                 R.string.title_firestore_paging_activity,
@@ -85,6 +88,7 @@ public class ChooserActivity extends AppCompatActivity {
 
         private static final int[] DESCRIPTION_IDS = new int[]{
                 R.string.desc_auth,
+                R.string.desc_weather,
                 R.string.desc_anonymous_upgrade,
                 R.string.desc_firestore,
                 R.string.desc_firestore_paging,

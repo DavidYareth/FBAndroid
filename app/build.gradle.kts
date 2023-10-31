@@ -98,6 +98,11 @@ dependencies {
     debugImplementation(Config.Libs.Misc.leakCanaryFragments)
     releaseImplementation(Config.Libs.Misc.leakCanaryNoop)
     testImplementation(Config.Libs.Misc.leakCanaryNoop)
+
+    // My dependencies
+    // implement retrofit and gson
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
 }
 
 apply(plugin = "com.google.gms.google-services")

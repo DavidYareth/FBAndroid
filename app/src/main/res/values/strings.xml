@@ -3,6 +3,7 @@
 
     <!-- Chooser -->
     <string name="title_auth_activity">Auth UI Demo</string>
+    <string name="title_weather_activity">Weather Info</string>
     <string name="title_firestore_activity">Cloud Firestore Demo</string>
     <string name="title_firestore_paging_activity">Cloud Firestore Paging Demo</string>
     <string name="title_realtime_database_activity">Realtime Database Demo</string>
@@ -10,6 +11,7 @@
     <string name="title_storage_activity">Storage Image Demo</string>
 
     <string name="desc_auth">Demonstrates the Firebase Auth UI flow, with customization options.</string>
+    <string name="desc_weather">Search for weather information by city name.</string>
     <string name="desc_anonymous_upgrade">Demonstrates upgrading an anonymous account using FirebaseUI.</string>
     <string name="desc_firestore">Demonstrates using a FirestoreRecyclerAdapter to load data from Cloud Firestore into a RecyclerView for a basic chat app.</string>
     <string name="desc_firestore_paging">Demonstrates using a FirestorePagingAdapter to load/infinite scroll paged data from Cloud Firestore.</string>
@@ -127,4 +129,9 @@
     <string name="menu_add_data">Add Data</string>
     <string name="hint_message">Say something…</string>
     <string name="paging_finished_message">Reached End of List</string>
+    <string name="fui_enter_a_location">Enter a location</string>
+    <string name="fui_fetch_weather_info">Fetch Weather Info</string>
+    <string name="fui_current_weather">Current Weather</string>
+    <string name="fui__24h_forecast">24h Forecast</string>
+    <string name="fui__5_day_forecast">5 Day Forecast</string>
 </resources>
