@@ -30,6 +30,9 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import com.firebase.uidemo.weather.services.OpenWeatherMapService;
 import com.firebase.uidemo.weather.responses.WeatherResponse;
 import com.firebase.uidemo.weather.responses.FiveDayForecastResponse;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 @SuppressLint("SetTextI18n")
 public class WeatherActivity extends AppCompatActivity {
@@ -42,6 +45,7 @@ public class WeatherActivity extends AppCompatActivity {
     private TextView titleCurrentWeather;
     private TextView title24hForecast;
     private TextView title5DayForecast;
+    private FirebaseFirestore firestore;
 
     private static final String BASE_URL = "http://api.openweathermap.org/";
     private static final String API_KEY = "5809b5df8117cc9febc348d5b4dd66b7";
@@ -54,6 +58,7 @@ public class WeatherActivity extends AppCompatActivity {
 
         bindViews();
         initRetrofit();
+        firestore = FirebaseFirestore.getInstance();
 
         buttonFetch.setOnClickListener(v -> {
             fetchWeatherData(editTextLocation.getText().toString());
@@ -116,8 +121,30 @@ public class WeatherActivity extends AppCompatActivity {
                         "\nCountry: " + weather.sys.country
         );
 
-        // Log in the console the weather data with the Log.d() method
-        Log.d("Weather", weather.toString());
+        storeWeatherInFirestore(weather);
+        storeWeatherInRealtime(weather);
+    }
+
+    private void storeWeatherInFirestore(WeatherResponse weather) {
+        String documentId = weather.name + "_" + weather.dt;
+
+        firestore.collection("currentWeather")
+                .document(documentId)
+                .set(weather)
+                .addOnSuccessListener(aVoid -> Log.d("Firestore", "Weather successfully written!"))
+                .addOnFailureListener(e -> Log.w("Firestore", "Error writing document", e));
+    }
+
+    private void storeWeatherInRealtime(WeatherResponse weather) {
+        String documentId = weather.name + "_" + weather.dt;
+
+        FirebaseDatabase.getInstance()
+                .getReference()
+                .child("currentWeather")
+                .child(documentId)
+                .setValue(weather)
+                .addOnSuccessListener(aVoid -> Log.d("RealtimeDb", "Weather successfully written!"))
+                .addOnFailureListener(e -> Log.w("RealtimeDb", "Error writing document", e));
     }
 
     private void fetch5Day3HourForecast(String location) {

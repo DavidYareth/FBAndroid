@@ -2,6 +2,7 @@ package com.firebase.uidemo.weather.responses;
 
 import androidx.annotation.NonNull;
 
+import com.google.firebase.firestore.PropertyName;
 import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
@@ -23,9 +24,13 @@ public class WeatherResponse {
     public String name;
     public int cod;
 
+    public WeatherResponse() {}
+
     public static class Coord {
         public double lon;
         public double lat;
+
+        public Coord() {}
 
         @NonNull
         @Override
@@ -43,6 +48,8 @@ public class WeatherResponse {
         public String description;
         public String icon;
 
+        public Weather() {}
+
         @NonNull
         @Override
         public String toString() {
@@ -56,14 +63,31 @@ public class WeatherResponse {
     }
 
     public static class Main {
+        @PropertyName("temp")
         public double temp;
+
+        @PropertyName("feels_like")
         public double feels_like;
+
+        @PropertyName("pressure")
         public double pressure;
+
+        @PropertyName("humidity")
         public double humidity;
+
+        @PropertyName("temp_min")
         public double temp_min;
+
+        @PropertyName("temp_max")
         public double temp_max;
+
+        @PropertyName("sea_level")
         public Double sea_level;
+
+        @PropertyName("grnd_level")
         public Double grnd_level;
+
+        public Main() {}
 
         @NonNull
         @Override
@@ -82,9 +106,16 @@ public class WeatherResponse {
     }
 
     public static class Wind {
+        @PropertyName("speed")
         public double speed;
+
+        @PropertyName("deg")
         public int deg;
+
+        @PropertyName("gust")
         public Double gust;
+
+        public Wind() {}
 
         @NonNull
         @Override
@@ -98,7 +129,10 @@ public class WeatherResponse {
     }
 
     public static class Clouds {
+        @PropertyName("all")
         public int all;
+
+        public Clouds() {}
 
         @NonNull
         @Override
@@ -110,11 +144,15 @@ public class WeatherResponse {
     }
 
     public static class Rain {
+        @PropertyName("1h")
         @SerializedName("1h")
         public Double h1;
 
+        @PropertyName("3h")
         @SerializedName("3h")
         public Double h3;
+
+        public Rain() {}
 
         @NonNull
         @Override
@@ -127,11 +165,15 @@ public class WeatherResponse {
     }
 
     public static class Snow {
+        @PropertyName("1h")
         @SerializedName("1h")
         public Double h1;
 
+        @PropertyName("3h")
         @SerializedName("3h")
         public Double h3;
+
+        public Snow() {}
 
         @NonNull
         @Override
@@ -144,12 +186,25 @@ public class WeatherResponse {
     }
 
     public static class Sys {
+        @PropertyName("type")
         public int type;
+
+        @PropertyName("id")
         public long id;
+
+        @PropertyName("message")
         public double message;
+
+        @PropertyName("country")
         public String country;
+
+        @PropertyName("sunrise")
         public long sunrise;
+
+        @PropertyName("sunset")
         public long sunset;
+
+        public Sys() {}
 
         @NonNull
         @Override
