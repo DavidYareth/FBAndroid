@@ -103,6 +103,7 @@ dependencies {
     // implement retrofit and gson
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("androidx.recyclerview:recyclerview:1.2.0")
 }
 
 apply(plugin = "com.google.gms.google-services")

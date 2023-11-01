@@ -1,18 +1,20 @@
 package com.firebase.uidemo.weather;
 
 import android.annotation.SuppressLint;
-import android.os.Build;
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
-import android.util.Pair;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,28 +29,41 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+import com.firebase.uidemo.weather.adapters.Forecast24hAdapter;
+import com.firebase.uidemo.weather.adapters.Forecast5DaysAdapter;
 import com.firebase.uidemo.weather.services.OpenWeatherMapService;
 import com.firebase.uidemo.weather.responses.WeatherResponse;
 import com.firebase.uidemo.weather.responses.FiveDayForecastResponse;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.FirebaseFirestore;
+
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
 
 @SuppressLint("SetTextI18n")
 public class WeatherActivity extends AppCompatActivity {
 
+    private static final String BASE_URL = "http://api.openweathermap.org/";
+    private static final String API_KEY = "5809b5df8117cc9febc348d5b4dd66b7";
+    private static final int REQUEST_LOCATION_PERMISSION_CODE = 100;
+
     private EditText editTextLocation;
     private Button buttonFetch;
     private TextView textViewCurrentWeather;
-    private TextView textView24hForecast;
-    private TextView textView5DayForecast;
     private TextView titleCurrentWeather;
     private TextView title24hForecast;
     private TextView title5DayForecast;
+    private RecyclerView recyclerView24hForecast;
+    private RecyclerView recyclerView5DaysForecast;
+    private Forecast24hAdapter forecast24hAdapter;
+    private Forecast5DaysAdapter forecast5DaysAdapter;
     private FirebaseFirestore firestore;
-
-    private static final String BASE_URL = "http://api.openweathermap.org/";
-    private static final String API_KEY = "5809b5df8117cc9febc348d5b4dd66b7";
     private OpenWeatherMapService service;
 
     @Override
@@ -60,17 +75,39 @@ public class WeatherActivity extends AppCompatActivity {
         initRetrofit();
         firestore = FirebaseFirestore.getInstance();
 
+        forecast24hAdapter = new Forecast24hAdapter(new ArrayList<>());
+        forecast5DaysAdapter = new Forecast5DaysAdapter(new HashMap<>());
+
+        recyclerView24hForecast.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView24hForecast.setAdapter(forecast24hAdapter);
+
+        recyclerView5DaysForecast.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView5DaysForecast.setAdapter(forecast5DaysAdapter);
+
         buttonFetch.setOnClickListener(v -> {
-            fetchWeatherData(editTextLocation.getText().toString());
+            if (editTextLocation.getText().toString().isEmpty()) {
+                getCurrentLocationAndFetchWeather();
+            } else {
+                fetchWeatherData(editTextLocation.getText().toString());
+            }
         });
+
+        // Check for location permissions
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION_PERMISSION_CODE);
+        } else {
+            // If permissions are already granted, fetch weather based on current location
+            getCurrentLocationAndFetchWeather();
+        }
     }
+
 
     private void bindViews() {
         editTextLocation = findViewById(R.id.editTextLocation);
         buttonFetch = findViewById(R.id.buttonFetch);
         textViewCurrentWeather = findViewById(R.id.textViewCurrentWeather);
-        textView24hForecast = findViewById(R.id.textView24hForecast);
-        textView5DayForecast = findViewById(R.id.textView5DayForecast);
+        recyclerView24hForecast = findViewById(R.id.recyclerView24hForecast);
+        recyclerView5DaysForecast = findViewById(R.id.recyclerView5DaysForecast);
         titleCurrentWeather = findViewById(R.id.textViewCurrentWeatherTitle);
         title24hForecast = findViewById(R.id.textView24hForecastTitle);
         title5DayForecast = findViewById(R.id.textView5DayForecastTitle);
@@ -84,13 +121,76 @@ public class WeatherActivity extends AppCompatActivity {
         service = retrofit.create(OpenWeatherMapService.class);
     }
 
-    private void fetchWeatherData(String location) {
-        fetchCurrentWeather(location);
-        fetch5Day3HourForecast(location);
+    private void getCurrentLocationAndFetchWeather() {
+        LocationManager locationManager = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        }
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+            if (location != null) {
+                String loc = location.getLatitude() + "," + location.getLongitude();
+                fetchWeatherData(loc);
+            } else {
+                LocationManager finalLocationManager = locationManager;
+                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5000, 10, new LocationListener() {
+                    @Override
+                    public void onLocationChanged(Location location) {
+                        finalLocationManager.removeUpdates(this);
+                        String loc = location.getLatitude() + "," + location.getLongitude();
+                        fetchWeatherData(loc);
+                    }
+
+                    @Override
+                    public void onStatusChanged(String provider, int status, Bundle extras) {}
+
+                    @Override
+                    public void onProviderEnabled(String provider) {}
+
+                    @Override
+                    public void onProviderDisabled(String provider) {}
+                });
+            }
+        } else {
+            Toast.makeText(this, "Location permission not granted", Toast.LENGTH_SHORT).show();
+        }
     }
 
-    private void fetchCurrentWeather(String location) {
-        Call<WeatherResponse> call = service.getCurrentWeather(location, API_KEY);
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_LOCATION_PERMISSION_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                getCurrentLocationAndFetchWeather();
+            } else {
+                Toast.makeText(this, "Location permission denied", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+
+    private void fetchWeatherData(String location) {
+        Call<WeatherResponse> callWeatherResponse;
+        Call<FiveDayForecastResponse> callFiveDayForecastResponse;
+        if (location.contains(",")) {
+            String[] parts = location.split(",");
+            double latitude = Double.parseDouble(parts[0]);
+            double longitude = Double.parseDouble(parts[1]);
+
+
+            callWeatherResponse = service.getCurrentWeatherByCoords(latitude, longitude, API_KEY);
+            callFiveDayForecastResponse = service.get5Day3HourForecastByCoords(latitude, longitude, API_KEY);
+        } else {
+            callWeatherResponse = service.getCurrentWeather(location, API_KEY);
+            callFiveDayForecastResponse = service.get5Day3HourForecast(location, API_KEY);
+        }
+
+        fetchCurrentWeather(callWeatherResponse);
+        fetch5Day3HourForecast(callFiveDayForecastResponse);
+    }
+
+
+    private void fetchCurrentWeather(Call<WeatherResponse> call) {
         call.enqueue(new Callback<WeatherResponse>() {
             @Override
             public void onResponse(@NonNull Call<WeatherResponse> call, @NonNull Response<WeatherResponse> response) {
@@ -147,111 +247,71 @@ public class WeatherActivity extends AppCompatActivity {
                 .addOnFailureListener(e -> Log.w("RealtimeDb", "Error writing document", e));
     }
 
-    private void fetch5Day3HourForecast(String location) {
-        Call<FiveDayForecastResponse> call = service.get5Day3HourForecast(location, API_KEY);
+    private void fetch5Day3HourForecast(Call<FiveDayForecastResponse> call) {
         call.enqueue(new Callback<FiveDayForecastResponse>() {
             @Override
             public void onResponse(@NonNull Call<FiveDayForecastResponse> call, @NonNull Response<FiveDayForecastResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     processAndDisplayForecastData(response.body());
                 } else {
-                    textView24hForecast.setText("Failed to fetch 5 day / 3 hour forecast.");
+                    Toast.makeText(WeatherActivity.this, "Failed to fetch 5 day / 3 hour forecast.", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<FiveDayForecastResponse> call, @NonNull Throwable t) {
-                textView24hForecast.setText("Failed to fetch 5 day / 3 hour forecast. Error: " + t.getMessage());
+                Toast.makeText(WeatherActivity.this, "Failed to fetch 5 day / 3 hour forecast. Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
 
     private void processAndDisplayForecastData(FiveDayForecastResponse forecastResponse) {
-        Map<String, List<FiveDayForecastResponse.ForecastData>> dateToForecastDataMap = groupForecastByDate(forecastResponse);
-        String result24h = format24hForecast(dateToForecastDataMap);
-        String result5Days = format5DaysForecast(dateToForecastDataMap);
-
         title24hForecast.setVisibility(View.VISIBLE);
         title5DayForecast.setVisibility(View.VISIBLE);
 
-        textView24hForecast.setText(result24h);
-        textView5DayForecast.setText(result5Days);
+        Map<String, List<FiveDayForecastResponse.ForecastData>> dateToForecastDataMap = groupForecastByDate(forecastResponse);
+
+        List<FiveDayForecastResponse.ForecastData> dataFor24h = get24hForecastData(dateToForecastDataMap);
+        forecast24hAdapter.updateData(dataFor24h);
+        forecast5DaysAdapter.updateData(dateToForecastDataMap);
     }
 
-    private Map<String, List<FiveDayForecastResponse.ForecastData>> groupForecastByDate(FiveDayForecastResponse forecastResponse) {
+    private Map<String, List<FiveDayForecastResponse.ForecastData>> groupForecastByDate(FiveDayForecastResponse response) {
         Map<String, List<FiveDayForecastResponse.ForecastData>> dateToForecastDataMap = new HashMap<>();
 
-        for (FiveDayForecastResponse.ForecastData data : forecastResponse.list) {
-            String date = data.dt_txt.split(" ")[0];
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                dateToForecastDataMap
-                        .computeIfAbsent(date, k -> new ArrayList<>())
-                        .add(data);
+        for (FiveDayForecastResponse.ForecastData forecastData : response.list) {
+            String date = extractDate(forecastData.dt_txt); // extracts "2023-11-01" from "2023-11-01 15:00:00"
+
+            if (!dateToForecastDataMap.containsKey(date)) {
+                dateToForecastDataMap.put(date, new ArrayList<>());
             }
+
+            dateToForecastDataMap.get(date).add(forecastData);
         }
 
         return dateToForecastDataMap;
     }
 
-    private String format24hForecast(Map<String, List<FiveDayForecastResponse.ForecastData>> dateToForecastDataMap) {
-        StringBuilder result24h = new StringBuilder();
+    private String extractDate(String dt_txt) {
+        return dt_txt.split(" ")[0];
+    }
+
+
+    private List<FiveDayForecastResponse.ForecastData> get24hForecastData(Map<String, List<FiveDayForecastResponse.ForecastData>> dateToForecastDataMap) {
+        List<FiveDayForecastResponse.ForecastData> result = new ArrayList<>();
         int counter = 0;
 
         for (List<FiveDayForecastResponse.ForecastData> dailyForecasts : dateToForecastDataMap.values()) {
             for (FiveDayForecastResponse.ForecastData data : dailyForecasts) {
                 if (counter < 8) {
-                    String time = data.dt_txt.split(" ")[1].split(":")[0] + ":" + data.dt_txt.split(" ")[1].split(":")[1];
-                    result24h.append("Time: ").append(time).append("\n")
-                            .append("Temp: ").append(kelvinToCelsius(data.main.temp)).append("°C\n")
-                            .append("Description: ").append(data.weather.get(0).description).append("\n\n");
+                    result.add(data);
                     counter++;
                 }
             }
         }
 
-        result24h.deleteCharAt(result24h.length() - 1);
-
-        return result24h.toString();
+        return result;
     }
-
-    private String format5DaysForecast(Map<String, List<FiveDayForecastResponse.ForecastData>> dateToForecastDataMap) {
-        StringBuilder result5Days = new StringBuilder();
-
-        for (String date : dateToForecastDataMap.keySet()) {
-            List<FiveDayForecastResponse.ForecastData> dailyForecasts = dateToForecastDataMap.get(date);
-            assert dailyForecasts != null;
-            Pair<Double, Double> temps = getMaxAndMinTemps(dailyForecasts);
-
-            String[] dateParts = date.split("-");
-            date = dateParts[2] + "-" + dateParts[1] + "-" + dateParts[0];
-            result5Days.append("Date: ").append(date).append("\n")
-                    .append("Max/Min: ").append(temps.first).append("°C / ").append(temps.second).append("°C\n\n");
-        }
-
-        result5Days.deleteCharAt(result5Days.length() - 1);
-
-        return result5Days.toString();
-    }
-
-    private Pair<Double, Double> getMaxAndMinTemps(List<FiveDayForecastResponse.ForecastData> dailyForecasts) {
-        double maxTemp = Double.MIN_VALUE;
-        double minTemp = Double.MAX_VALUE;
-
-        for (FiveDayForecastResponse.ForecastData data : dailyForecasts) {
-            double currentMax = kelvinToCelsius(data.main.temp_max);
-            double currentMin = kelvinToCelsius(data.main.temp_min);
-
-            if (currentMax > maxTemp) {
-                maxTemp = currentMax;
-            }
-            if (currentMin < minTemp) {
-                minTemp = currentMin;
-            }
-        }
-
-        return new Pair<>(maxTemp, minTemp);
-    }
-
 
     private int kelvinToCelsius(double kelvin) {
         return (int) Math.round(kelvin - 273.15);

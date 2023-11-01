@@ -67,34 +67,34 @@ public class ChooserActivity extends AppCompatActivity {
         private static final Class[] CLASSES = new Class[]{
                 AuthUiActivity.class,
                 WeatherActivity.class,
-                AnonymousUpgradeActivity.class,
+                /*AnonymousUpgradeActivity.class,
                 FirestoreChatActivity.class,
                 FirestorePagingActivity.class,
                 RealtimeDbChatActivity.class,
                 FirebaseDbPagingActivity.class,
-                ImageActivity.class,
+                ImageActivity.class,*/
         };
 
         private static final int[] DESCRIPTION_NAMES = new int[]{
                 R.string.title_auth_activity,
                 R.string.title_weather_activity,
-                R.string.title_anonymous_upgrade,
+                /*R.string.title_anonymous_upgrade,
                 R.string.title_firestore_activity,
                 R.string.title_firestore_paging_activity,
                 R.string.title_realtime_database_activity,
                 R.string.title_realtime_database_paging_activity,
-                R.string.title_storage_activity
+                R.string.title_storage_activity*/
         };
 
         private static final int[] DESCRIPTION_IDS = new int[]{
                 R.string.desc_auth,
                 R.string.desc_weather,
-                R.string.desc_anonymous_upgrade,
+                /*R.string.desc_anonymous_upgrade,
                 R.string.desc_firestore,
                 R.string.desc_firestore_paging,
                 R.string.desc_realtime_database,
                 R.string.desc_realtime_database_paging,
-                R.string.desc_storage
+                R.string.desc_storage*/
         };
 
         @Override

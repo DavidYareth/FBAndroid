@@ -14,4 +14,11 @@ public interface OpenWeatherMapService {
     @GET("data/2.5/forecast")
     Call<FiveDayForecastResponse> get5Day3HourForecast(@Query("q") String location, @Query("appid") String apiKey);
 
+    @GET("data/2.5/weather")
+    Call<WeatherResponse> getCurrentWeatherByCoords(@Query("lat") double latitude, @Query("lon") double longitude, @Query("appid") String apiKey);
+
+    @GET("data/2.5/forecast")
+    Call<FiveDayForecastResponse> get5Day3HourForecastByCoords(@Query("lat") double latitude, @Query("lon") double longitude, @Query("appid") String apiKey);
+
+
 }
