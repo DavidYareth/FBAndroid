@@ -84,6 +84,9 @@ dependencies {
     implementation(Config.Libs.Androidx.customTabs)
 
     implementation(Config.Libs.Misc.glide)
+    implementation("androidx.appcompat:appcompat:1.6.1")
+    implementation("com.google.android.material:material:1.10.0")
+    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     annotationProcessor(Config.Libs.Misc.glideCompiler)
 
     // Used for FirestorePagingActivity

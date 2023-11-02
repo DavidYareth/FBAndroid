@@ -134,4 +134,5 @@
     <string name="fui_current_weather">Current Weather</string>
     <string name="fui__24h_forecast">24h Forecast</string>
     <string name="fui__5_day_forecast">5 Day Forecast</string>
+    <string name="fui_history">History</string>
 </resources>

@@ -2,8 +2,11 @@ package com.firebase.uidemo.weather;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -65,6 +68,7 @@ public class WeatherActivity extends AppCompatActivity {
     private Forecast5DaysAdapter forecast5DaysAdapter;
     private FirebaseFirestore firestore;
     private OpenWeatherMapService service;
+    private String location;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -92,15 +96,29 @@ public class WeatherActivity extends AppCompatActivity {
             }
         });
 
-        // Check for location permissions
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION_PERMISSION_CODE);
         } else {
-            // If permissions are already granted, fetch weather based on current location
             getCurrentLocationAndFetchWeather();
         }
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_weather, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_history) {
+            Intent intent = new Intent(WeatherActivity.this, WeatherHistoryActivity.class);
+            intent.putExtra("location", location);
+            startActivity(intent);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     private void bindViews() {
         editTextLocation = findViewById(R.id.editTextLocation);
@@ -177,7 +195,6 @@ public class WeatherActivity extends AppCompatActivity {
             double latitude = Double.parseDouble(parts[0]);
             double longitude = Double.parseDouble(parts[1]);
 
-
             callWeatherResponse = service.getCurrentWeatherByCoords(latitude, longitude, API_KEY);
             callFiveDayForecastResponse = service.get5Day3HourForecastByCoords(latitude, longitude, API_KEY);
         } else {
@@ -209,9 +226,10 @@ public class WeatherActivity extends AppCompatActivity {
     }
 
     private void displayCurrentWeather(WeatherResponse weather) {
+        location = weather.name;
         titleCurrentWeather.setVisibility(View.VISIBLE);
         textViewCurrentWeather.setText(
-                "City: " + weather.name +
+                "City: " + location +
                         "\nTemperature: " + kelvinToCelsius(weather.main.temp) + "ºC" +
                         "\nFeels Like: " + kelvinToCelsius(weather.main.feels_like) + "ºC" +
                         "\nHumidity: " + weather.main.humidity + "%" +
@@ -295,7 +313,6 @@ public class WeatherActivity extends AppCompatActivity {
     private String extractDate(String dt_txt) {
         return dt_txt.split(" ")[0];
     }
-
 
     private List<FiveDayForecastResponse.ForecastData> get24hForecastData(Map<String, List<FiveDayForecastResponse.ForecastData>> dateToForecastDataMap) {
         List<FiveDayForecastResponse.ForecastData> result = new ArrayList<>();

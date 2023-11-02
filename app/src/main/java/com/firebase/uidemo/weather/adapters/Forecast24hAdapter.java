@@ -29,10 +29,12 @@ public class Forecast24hAdapter extends RecyclerView.Adapter<Forecast24hAdapter.
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         FiveDayForecastResponse.ForecastData data = forecastData.get(position);
-        holder.textTime.setText(data.dt_txt);
-        String temperature = kelvinToCelsius(data.main.temp) + "°C";
+        String hour = "Hour: " + data.dt_txt.split(" ")[1].substring(0, 5);
+        holder.textTime.setText(hour);
+        String temperature = "Temp: " + kelvinToCelsius(data.main.temp) + "°C";
         holder.textTemp.setText(temperature);
-        holder.textDescription.setText(data.weather.get(0).description);
+        String description = "Weather: " + data.weather.get(0).description;
+        holder.textDescription.setText(description);
     }
 
     @Override
