@@ -151,35 +151,22 @@ public class SignedInActivity extends AppCompatActivity {
         } else {
             for (UserInfo info : user.getProviderData()) {
                 switch (info.getProviderId()) {
-                    case GoogleAuthProvider.PROVIDER_ID:
-                        providers.add(getString(R.string.providers_google));
-                        break;
-                    case FacebookAuthProvider.PROVIDER_ID:
-                        providers.add(getString(R.string.providers_facebook));
-                        break;
-                    case TwitterAuthProvider.PROVIDER_ID:
-                        providers.add(getString(R.string.providers_twitter));
-                        break;
                     case EmailAuthProvider.PROVIDER_ID:
                         providers.add(getString(R.string.providers_email));
                         break;
-                    case PhoneAuthProvider.PROVIDER_ID:
-                        providers.add(getString(R.string.providers_phone));
-                        break;
-                    case EMAIL_LINK_PROVIDER:
-                        providers.add(getString(R.string.providers_email_link));
-                        break;
                     case FirebaseAuthProvider.PROVIDER_ID:
-                        // Ignore this provider, it's not very meaningful
+                        // This is the provider ID for anonymous accounts
+                        providers.add(getString(R.string.providers_anonymous));
                         break;
                     default:
-                        providers.add(info.getProviderId());
+                        // No need to add any other providers
                 }
             }
         }
 
         mBinding.userEnabledProviders.setText(getString(R.string.used_providers, providers));
     }
+
 
     private void populateIdpToken(@Nullable IdpResponse response) {
         String token = null;

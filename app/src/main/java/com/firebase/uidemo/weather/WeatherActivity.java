@@ -32,11 +32,14 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+import com.firebase.uidemo.auth.AuthUiActivity;
 import com.firebase.uidemo.weather.adapters.Forecast24hAdapter;
 import com.firebase.uidemo.weather.adapters.Forecast5DaysAdapter;
 import com.firebase.uidemo.weather.services.OpenWeatherMapService;
 import com.firebase.uidemo.weather.responses.WeatherResponse;
 import com.firebase.uidemo.weather.responses.FiveDayForecastResponse;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -69,11 +72,16 @@ public class WeatherActivity extends AppCompatActivity {
     private FirebaseFirestore firestore;
     private OpenWeatherMapService service;
     private String location;
+    private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_weather);
+
+        mAuth = FirebaseAuth.getInstance();
+
+        checkUserAuthentication();
 
         bindViews();
         initRetrofit();
@@ -101,6 +109,17 @@ public class WeatherActivity extends AppCompatActivity {
         } else {
             getCurrentLocationAndFetchWeather();
         }
+    }
+
+    private void checkUserAuthentication() {
+        FirebaseUser user = mAuth.getCurrentUser();
+        if (user == null) {
+            // User is not signed in. Redirect to AuthUIActivity and show toast
+            Toast.makeText(this, "You must be signed in to use this functionality.", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(this, AuthUiActivity.class));
+            finish();
+        }
+        // If the user is signed in, the app continues as normal.
     }
 
     @Override
