@@ -61,8 +61,14 @@ public class WeatherActivity extends AppCompatActivity {
 
     private EditText editTextLocation;
     private Button buttonFetch;
-    private TextView textViewCurrentWeather;
+    private TextView textViewCityCountry;
     private TextView titleCurrentWeather;
+    private TextView textViewTemperature;
+    private TextView textViewFeelsLike;
+    private TextView textViewHumidity;
+    private TextView textViewWeatherDescription;
+    private TextView textViewWindSpeed;
+    private TextView textViewCloudiness;
     private TextView title24hForecast;
     private TextView title5DayForecast;
     private RecyclerView recyclerView24hForecast;
@@ -131,18 +137,30 @@ public class WeatherActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_history) {
-            Intent intent = new Intent(WeatherActivity.this, WeatherHistoryActivity.class);
-            intent.putExtra("location", location);
-            startActivity(intent);
+            if (location != null && !location.trim().isEmpty()) {
+                Intent intent = new Intent(WeatherActivity.this, WeatherHistoryActivity.class);
+                intent.putExtra("location", location);
+                startActivity(intent);
+            } else {
+                Toast.makeText(this, "Location is not set", Toast.LENGTH_SHORT).show();
+            }
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
+
     private void bindViews() {
         editTextLocation = findViewById(R.id.editTextLocation);
         buttonFetch = findViewById(R.id.buttonFetch);
-        textViewCurrentWeather = findViewById(R.id.textViewCurrentWeather);
+        textViewCityCountry = findViewById(R.id.titleLocation);
+        textViewTemperature = findViewById(R.id.textViewTemperature);
+        textViewFeelsLike = findViewById(R.id.textViewFeelsLike);
+        textViewHumidity = findViewById(R.id.textViewHumidity);
+        textViewWeatherDescription = findViewById(R.id.textViewWeatherDescription);
+        textViewWindSpeed = findViewById(R.id.textViewWindSpeed);
+        textViewCloudiness = findViewById(R.id.textViewCloudiness);
+
         recyclerView24hForecast = findViewById(R.id.recyclerView24hForecast);
         recyclerView5DaysForecast = findViewById(R.id.recyclerView5DaysForecast);
         titleCurrentWeather = findViewById(R.id.textViewCurrentWeatherTitle);
@@ -233,30 +251,36 @@ public class WeatherActivity extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null) {
                     displayCurrentWeather(response.body());
                 } else {
-                    textViewCurrentWeather.setText("Failed to fetch weather info.");
+                    Toast.makeText(WeatherActivity.this, "Failed to fetch weather info.", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<WeatherResponse> call, @NonNull Throwable t) {
-                textViewCurrentWeather.setText("Failed to fetch weather info. Error: " + t.getMessage());
+                Toast.makeText(WeatherActivity.this, "Failed to fetch weather info. Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
 
     private void displayCurrentWeather(WeatherResponse weather) {
         location = weather.name;
+
+        textViewCityCountry.setText(location + ", " + weather.sys.country);
+        textViewTemperature.setText("Temperature: " + kelvinToCelsius(weather.main.temp) + "ºC");
+        textViewFeelsLike.setText("Feels Like: " + kelvinToCelsius(weather.main.feels_like) + "ºC");
+        textViewHumidity.setText("Humidity: " + weather.main.humidity + "%");
+        textViewWeatherDescription.setText("Weather: " + weather.weather.get(0).description);
+        textViewWindSpeed.setText("Wind Speed: " + msToKmh(weather.wind.speed) + " km/h");
+        textViewCloudiness.setText("Cloudiness: " + weather.clouds.all + "%");
+
         titleCurrentWeather.setVisibility(View.VISIBLE);
-        textViewCurrentWeather.setText(
-                "City: " + location +
-                        "\nTemperature: " + kelvinToCelsius(weather.main.temp) + "ºC" +
-                        "\nFeels Like: " + kelvinToCelsius(weather.main.feels_like) + "ºC" +
-                        "\nHumidity: " + weather.main.humidity + "%" +
-                        "\nWeather: " + weather.weather.get(0).description +
-                        "\nWind Speed: " + msToKmh(weather.wind.speed) + " km/h" +
-                        "\nCloudiness: " + weather.clouds.all + "%" +
-                        "\nCountry: " + weather.sys.country
-        );
+        textViewCityCountry.setVisibility(View.VISIBLE);
+        textViewTemperature.setVisibility(View.VISIBLE);
+        textViewFeelsLike.setVisibility(View.VISIBLE);
+        textViewHumidity.setVisibility(View.VISIBLE);
+        textViewWeatherDescription.setVisibility(View.VISIBLE);
+        textViewWindSpeed.setVisibility(View.VISIBLE);
+        textViewCloudiness.setVisibility(View.VISIBLE);
 
         storeWeatherInFirestore(weather);
         storeWeatherInRealtime(weather);

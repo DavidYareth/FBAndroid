@@ -25,6 +25,16 @@
         android:text="@string/fui_fetch_weather_info"
         android:layout_marginBottom="16dp" />
 
+    <!-- City and Country -->
+    <TextView
+        android:id="@+id/titleLocation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="8dp"
+        android:textSize="20sp"
+        android:textColor="#000000"
+        android:visibility="gone"/>
+
     <!-- Title for Current Weather -->
     <TextView
         android:id="@+id/textViewCurrentWeatherTitle"
@@ -37,12 +47,59 @@
         android:textColor="#000000"
         android:visibility="gone"/> <!-- #000000 is the hexadecimal code for black -->
 
+    <!-- Temperature -->
     <TextView
-        android:id="@+id/textViewCurrentWeather"
+        android:id="@+id/textViewTemperature"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="8dp"
-        android:textColor="#000000" />
+        android:textColor="#000000"
+        android:visibility="gone"/>
+
+    <!-- Feels Like -->
+    <TextView
+        android:id="@+id/textViewFeelsLike"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="8dp"
+        android:textColor="#000000"
+        android:visibility="gone"/>
+
+    <!-- Humidity -->
+    <TextView
+        android:id="@+id/textViewHumidity"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="8dp"
+        android:textColor="#000000"
+        android:visibility="gone"/>
+
+    <!-- Weather Description -->
+    <TextView
+        android:id="@+id/textViewWeatherDescription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="8dp"
+        android:textColor="#000000"
+        android:visibility="gone"/>
+
+    <!-- Wind Speed -->
+    <TextView
+        android:id="@+id/textViewWindSpeed"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="8dp"
+        android:textColor="#000000"
+        android:visibility="gone"/>
+
+    <!-- Cloudiness -->
+    <TextView
+        android:id="@+id/textViewCloudiness"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="8dp"
+        android:textColor="#000000"
+        android:visibility="gone"/>
 
     <!-- Title for 24h Forecast -->
     <TextView

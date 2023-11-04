@@ -55,15 +55,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 
 public class AuthUiActivity extends AppCompatActivity implements ActivityResultCallback<FirebaseAuthUIAuthenticationResult> {
-    private static final String TAG = "AuthUiActivity";
 
     private static final String FIREBASE_TOS_URL = "https://firebase.google.com/terms/";
     private static final String FIREBASE_PRIVACY_POLICY_URL = "https://firebase.google.com/terms/analytics/#7_privacy";
-
-    private static final int RC_SIGN_IN = 100;
-
     private AuthUiLayoutBinding mBinding;
-
     private final ActivityResultLauncher<Intent> signIn = registerForActivityResult(new FirebaseAuthUIActivityResultContract(), this);
 
     @NonNull

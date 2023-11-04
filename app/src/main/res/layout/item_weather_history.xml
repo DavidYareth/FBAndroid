@@ -9,46 +9,55 @@
         android:id="@+id/tvCity"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:textColor="#000000" />
 
     <TextView
         android:id="@+id/tvTimestamp"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:textColor="#000000" />
 
     <TextView
         android:id="@+id/tvTemperature"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:textColor="#000000" />
 
     <TextView
         android:id="@+id/tvFeelsLike"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:textColor="#000000" />
 
     <TextView
         android:id="@+id/tvHumidity"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:textColor="#000000" />
 
     <TextView
         android:id="@+id/tvWeatherDescription"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:textColor="#000000" />
 
     <TextView
         android:id="@+id/tvWindSpeed"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:textColor="#000000" />
 
     <TextView
         android:id="@+id/tvCloudiness"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:textColor="#000000" />
 
     <TextView
         android:id="@+id/tvCountry"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:textColor="#000000" />
 
 </LinearLayout>
