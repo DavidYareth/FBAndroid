@@ -74,8 +74,6 @@ public class AuthUiActivity extends AppCompatActivity implements ActivityResultC
 
         mBinding.signIn.setOnClickListener(view -> signIn());
 
-        mBinding.signInSilent.setOnClickListener(view -> silentSignIn());
-
         catchEmailLinkSignIn();
     }
 
@@ -123,17 +121,6 @@ public class AuthUiActivity extends AppCompatActivity implements ActivityResultC
             builder.enableAnonymousUsersAutoUpgrade();
         }
         return builder.build();
-    }
-
-    public void silentSignIn() {
-        getAuthUI().silentSignIn(this, getSelectedProviders())
-                .addOnCompleteListener(this, task -> {
-                    if (task.isSuccessful()) {
-                        startSignedInActivity(null);
-                    } else {
-                        showSnackbar(R.string.sign_in_failed);
-                    }
-                });
     }
 
     @Override

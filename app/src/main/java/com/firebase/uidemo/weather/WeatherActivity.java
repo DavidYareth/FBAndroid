@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,9 +21,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+import java.util.TreeMap;
 
 import com.firebase.uidemo.R;
 
@@ -61,16 +65,15 @@ public class WeatherActivity extends AppCompatActivity {
 
     private EditText editTextLocation;
     private Button buttonFetch;
+    private LinearLayout layoutCurrentWeather;
+    private LinearLayout layoutForecast;
     private TextView textViewCityCountry;
-    private TextView titleCurrentWeather;
     private TextView textViewTemperature;
     private TextView textViewFeelsLike;
     private TextView textViewHumidity;
     private TextView textViewWeatherDescription;
     private TextView textViewWindSpeed;
     private TextView textViewCloudiness;
-    private TextView title24hForecast;
-    private TextView title5DayForecast;
     private RecyclerView recyclerView24hForecast;
     private RecyclerView recyclerView5DaysForecast;
     private Forecast24hAdapter forecast24hAdapter;
@@ -153,6 +156,8 @@ public class WeatherActivity extends AppCompatActivity {
     private void bindViews() {
         editTextLocation = findViewById(R.id.editTextLocation);
         buttonFetch = findViewById(R.id.buttonFetch);
+        layoutCurrentWeather = findViewById(R.id.layoutCurrentWeather);
+        layoutForecast = findViewById(R.id.layoutForecast);
         textViewCityCountry = findViewById(R.id.titleLocation);
         textViewTemperature = findViewById(R.id.textViewTemperature);
         textViewFeelsLike = findViewById(R.id.textViewFeelsLike);
@@ -160,12 +165,8 @@ public class WeatherActivity extends AppCompatActivity {
         textViewWeatherDescription = findViewById(R.id.textViewWeatherDescription);
         textViewWindSpeed = findViewById(R.id.textViewWindSpeed);
         textViewCloudiness = findViewById(R.id.textViewCloudiness);
-
         recyclerView24hForecast = findViewById(R.id.recyclerView24hForecast);
         recyclerView5DaysForecast = findViewById(R.id.recyclerView5DaysForecast);
-        titleCurrentWeather = findViewById(R.id.textViewCurrentWeatherTitle);
-        title24hForecast = findViewById(R.id.textView24hForecastTitle);
-        title5DayForecast = findViewById(R.id.textView5DayForecastTitle);
     }
 
     private void initRetrofit() {
@@ -182,6 +183,7 @@ public class WeatherActivity extends AppCompatActivity {
             locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         }
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            assert locationManager != null;
             Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
             if (location != null) {
                 String loc = location.getLatitude() + "," + location.getLongitude();
@@ -190,7 +192,7 @@ public class WeatherActivity extends AppCompatActivity {
                 LocationManager finalLocationManager = locationManager;
                 locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5000, 10, new LocationListener() {
                     @Override
-                    public void onLocationChanged(Location location) {
+                    public void onLocationChanged(@NonNull Location location) {
                         finalLocationManager.removeUpdates(this);
                         String loc = location.getLatitude() + "," + location.getLongitude();
                         fetchWeatherData(loc);
@@ -200,10 +202,10 @@ public class WeatherActivity extends AppCompatActivity {
                     public void onStatusChanged(String provider, int status, Bundle extras) {}
 
                     @Override
-                    public void onProviderEnabled(String provider) {}
+                    public void onProviderEnabled(@NonNull String provider) {}
 
                     @Override
-                    public void onProviderDisabled(String provider) {}
+                    public void onProviderDisabled(@NonNull String provider) {}
                 });
             }
         } else {
@@ -273,14 +275,7 @@ public class WeatherActivity extends AppCompatActivity {
         textViewWindSpeed.setText("Wind Speed: " + msToKmh(weather.wind.speed) + " km/h");
         textViewCloudiness.setText("Cloudiness: " + weather.clouds.all + "%");
 
-        titleCurrentWeather.setVisibility(View.VISIBLE);
-        textViewCityCountry.setVisibility(View.VISIBLE);
-        textViewTemperature.setVisibility(View.VISIBLE);
-        textViewFeelsLike.setVisibility(View.VISIBLE);
-        textViewHumidity.setVisibility(View.VISIBLE);
-        textViewWeatherDescription.setVisibility(View.VISIBLE);
-        textViewWindSpeed.setVisibility(View.VISIBLE);
-        textViewCloudiness.setVisibility(View.VISIBLE);
+        layoutCurrentWeather.setVisibility(View.VISIBLE);
 
         storeWeatherInFirestore(weather);
         storeWeatherInRealtime(weather);
@@ -327,27 +322,26 @@ public class WeatherActivity extends AppCompatActivity {
     }
 
     private void processAndDisplayForecastData(FiveDayForecastResponse forecastResponse) {
-        title24hForecast.setVisibility(View.VISIBLE);
-        title5DayForecast.setVisibility(View.VISIBLE);
-
         Map<String, List<FiveDayForecastResponse.ForecastData>> dateToForecastDataMap = groupForecastByDate(forecastResponse);
 
-        List<FiveDayForecastResponse.ForecastData> dataFor24h = get24hForecastData(dateToForecastDataMap);
-        forecast24hAdapter.updateData(dataFor24h);
-        forecast5DaysAdapter.updateData(dateToForecastDataMap);
-    }
+        Map<String, List<FiveDayForecastResponse.ForecastData>> sortedMap = new TreeMap<>(dateToForecastDataMap);
 
+        List<FiveDayForecastResponse.ForecastData> dataFor24h = get24hForecastData(sortedMap);
+        forecast24hAdapter.updateData(dataFor24h);
+        forecast5DaysAdapter.updateData(sortedMap);
+        layoutForecast.setVisibility(View.VISIBLE);
+    }
     private Map<String, List<FiveDayForecastResponse.ForecastData>> groupForecastByDate(FiveDayForecastResponse response) {
         Map<String, List<FiveDayForecastResponse.ForecastData>> dateToForecastDataMap = new HashMap<>();
 
         for (FiveDayForecastResponse.ForecastData forecastData : response.list) {
-            String date = extractDate(forecastData.dt_txt); // extracts "2023-11-01" from "2023-11-01 15:00:00"
+            String date = extractDate(forecastData.dt_txt);
 
             if (!dateToForecastDataMap.containsKey(date)) {
                 dateToForecastDataMap.put(date, new ArrayList<>());
             }
 
-            dateToForecastDataMap.get(date).add(forecastData);
+            Objects.requireNonNull(dateToForecastDataMap.get(date)).add(forecastData);
         }
 
         return dateToForecastDataMap;
@@ -361,9 +355,15 @@ public class WeatherActivity extends AppCompatActivity {
         List<FiveDayForecastResponse.ForecastData> result = new ArrayList<>();
         int counter = 0;
 
+        // Get the current hour to filter out past forecast data
+        int currentHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+
         for (List<FiveDayForecastResponse.ForecastData> dailyForecasts : dateToForecastDataMap.values()) {
             for (FiveDayForecastResponse.ForecastData data : dailyForecasts) {
-                if (counter < 8) {
+                String time = data.dt_txt.split(" ")[1];  // Extracts "15:00:00" from "2023-11-01 15:00:00"
+                int forecastHour = Integer.parseInt(time.split(":")[0]);
+
+                if ((forecastHour >= currentHour && counter < 8) || counter > 0 && counter < 8) {
                     result.add(data);
                     counter++;
                 }
@@ -372,6 +372,7 @@ public class WeatherActivity extends AppCompatActivity {
 
         return result;
     }
+
 
     private int kelvinToCelsius(double kelvin) {
         return (int) Math.round(kelvin - 273.15);

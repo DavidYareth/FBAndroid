@@ -16,6 +16,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+
+
 public class Forecast5DaysAdapter extends RecyclerView.Adapter<Forecast5DaysAdapter.ViewHolder> {
     private Map<String, List<FiveDayForecastResponse.ForecastData>> dateToForecastDataMap;
 
@@ -34,17 +40,13 @@ public class Forecast5DaysAdapter extends RecyclerView.Adapter<Forecast5DaysAdap
         String date = new ArrayList<>(dateToForecastDataMap.keySet()).get(position);
         List<FiveDayForecastResponse.ForecastData> dailyForecasts = dateToForecastDataMap.get(date);
 
-        // Set date
-        String[] dateParts = date.split("-");
-        String formattedDate = dateParts[2] + "-" + dateParts[1] + "-" + dateParts[0];
-        String finalDate = "Date: " + formattedDate;
-        // Calculate max/min temps and display it
+        holder.textDate.setText(getDayOfWeek(date));
+
         assert dailyForecasts != null;
         Pair<Double, Double> temps = getMaxAndMinTemps(dailyForecasts);
         String tempMax = "Max: " + temps.first + "°C";
         String tempMin = "Min: " + temps.second + "°C";
 
-        holder.textDate.setText(finalDate);
         holder.textTempMax.setText(tempMax);
         holder.textTempMin.setText(tempMin);
     }
@@ -85,6 +87,35 @@ public class Forecast5DaysAdapter extends RecyclerView.Adapter<Forecast5DaysAdap
 
     private int kelvinToCelsius(double kelvin) {
         return (int) Math.round(kelvin - 273.15);
+    }
+
+    private String getDayOfWeek(String dateStr) {
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+            Date date = sdf.parse(dateStr);
+
+            Calendar cal = Calendar.getInstance();
+            assert date != null;
+            cal.setTime(date);
+
+            Calendar today = Calendar.getInstance();
+
+            if (cal.get(Calendar.YEAR) == today.get(Calendar.YEAR) &&
+                    cal.get(Calendar.DAY_OF_YEAR) == today.get(Calendar.DAY_OF_YEAR)) {
+                return "Today";
+            }
+
+            today.add(Calendar.DAY_OF_YEAR, 1);
+            if (cal.get(Calendar.YEAR) == today.get(Calendar.YEAR) &&
+                    cal.get(Calendar.DAY_OF_YEAR) == today.get(Calendar.DAY_OF_YEAR)) {
+                return "Tomorrow";
+            }
+
+            return new SimpleDateFormat("EEEE", Locale.getDefault()).format(date);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return dateStr;
+        }
     }
 
     @SuppressLint("NotifyDataSetChanged")

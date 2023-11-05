@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="16dp">
@@ -9,132 +10,168 @@
       android:layout_height="wrap_content"
       android:orientation="vertical">
 
-    <EditText
-        android:id="@+id/editTextLocation"
+    <!-- Location Input -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/layoutTextLocation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/fui_enter_a_location"
-        android:autofillHints="city"
-        android:inputType="textCapWords"
-        android:layout_marginBottom="16dp" />
+        android:hint="@string/fui_enter_a_location">
 
-    <Button
+      <com.google.android.material.textfield.TextInputEditText
+          android:id="@+id/editTextLocation"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:autofillHints="city"
+          android:background="#FFFFFF"
+          android:inputType="textCapWords" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Fetch Weather Button -->
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/buttonFetch"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/fui_fetch_weather_info"
-        android:layout_marginBottom="16dp" />
+        android:layout_marginTop="16dp"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
 
-    <!-- City and Country -->
     <TextView
         android:id="@+id/titleLocation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="8dp"
-        android:textSize="20sp"
-        android:textColor="#000000"
-        android:visibility="gone"/>
-
-    <!-- Title for Current Weather -->
-    <TextView
-        android:id="@+id/textViewCurrentWeatherTitle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingTop="16dp"
-        android:text="@string/fui_current_weather"
+        android:layout_marginTop="16dp"
+        android:textSize="26sp"
         android:textStyle="bold"
-        android:textSize="20sp"
         android:textColor="#000000"
-        android:visibility="gone"/> <!-- #000000 is the hexadecimal code for black -->
+        android:fontFamily="sans-serif-medium" />
 
-    <!-- Temperature -->
-    <TextView
-        android:id="@+id/textViewTemperature"
+    <LinearLayout
+        android:id="@+id/layoutCurrentWeather"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="8dp"
-        android:textColor="#000000"
-        android:visibility="gone"/>
+        android:orientation="vertical"
+        android:visibility="gone">
 
-    <!-- Feels Like -->
-    <TextView
-        android:id="@+id/textViewFeelsLike"
+      <TextView
+          android:id="@+id/textViewCurrentWeatherTitle"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:paddingTop="8dp"
+          android:text="@string/fui_current_weather"
+          android:textStyle="bold"
+          android:textSize="22sp"
+          android:textColor="#000000"/>
+
+      <com.google.android.material.card.MaterialCardView
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_margin="8dp"
+          app:cardElevation="4dp"
+          app:cardCornerRadius="8dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+          <TextView
+              android:id="@+id/textViewTemperature"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:textColor="#000000"
+              android:fontFamily="sans-serif-medium"
+              android:textSize="18sp" />
+
+          <TextView
+              android:id="@+id/textViewFeelsLike"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:paddingTop="12dp"
+              android:textColor="#000000"
+              android:textSize="18sp" />
+
+          <TextView
+              android:id="@+id/textViewHumidity"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:paddingTop="12dp"
+              android:textColor="#000000"
+              android:textSize="18sp" />
+
+          <TextView
+              android:id="@+id/textViewWeatherDescription"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:paddingTop="12dp"
+              android:textColor="#000000"
+              android:fontFamily="sans-serif-medium"
+              android:visibility="gone"
+              android:textSize="18sp" />
+
+          <TextView
+              android:id="@+id/textViewWindSpeed"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:paddingTop="12dp"
+              android:textColor="#000000"
+              android:textSize="18sp" />
+
+          <TextView
+              android:id="@+id/textViewCloudiness"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:paddingTop="12dp"
+              android:textColor="#000000"
+              android:textSize="18sp" />
+
+        </LinearLayout>
+      </com.google.android.material.card.MaterialCardView>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layoutForecast"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="8dp"
-        android:textColor="#000000"
-        android:visibility="gone"/>
+        android:orientation="vertical"
+        android:visibility="gone">
 
-    <!-- Humidity -->
-    <TextView
-        android:id="@+id/textViewHumidity"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingTop="8dp"
-        android:textColor="#000000"
-        android:visibility="gone"/>
+      <TextView
+          android:id="@+id/textView24hForecastTitle"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:paddingTop="16dp"
+          android:text="@string/fui__24h_forecast"
+          android:textStyle="bold"
+          android:textSize="20sp"
+          android:textColor="#000000" />
 
-    <!-- Weather Description -->
-    <TextView
-        android:id="@+id/textViewWeatherDescription"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingTop="8dp"
-        android:textColor="#000000"
-        android:visibility="gone"/>
+      <androidx.recyclerview.widget.RecyclerView
+          android:id="@+id/recyclerView24hForecast"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:paddingTop="8dp" />
 
-    <!-- Wind Speed -->
-    <TextView
-        android:id="@+id/textViewWindSpeed"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingTop="8dp"
-        android:textColor="#000000"
-        android:visibility="gone"/>
+      <TextView
+          android:id="@+id/textView5DayForecastTitle"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:paddingTop="16dp"
+          android:text="@string/fui__5_day_forecast"
+          android:textStyle="bold"
+          android:textSize="20sp"
+          android:textColor="#000000" />
 
-    <!-- Cloudiness -->
-    <TextView
-        android:id="@+id/textViewCloudiness"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingTop="8dp"
-        android:textColor="#000000"
-        android:visibility="gone"/>
+      <androidx.recyclerview.widget.RecyclerView
+          android:id="@+id/recyclerView5DaysForecast"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:paddingTop="8dp" />
 
-    <!-- Title for 24h Forecast -->
-    <TextView
-        android:id="@+id/textView24hForecastTitle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingTop="16dp"
-        android:text="@string/fui__24h_forecast"
-        android:textStyle="bold"
-        android:textSize="20sp"
-        android:textColor="#000000"
-        android:visibility="gone"/>
+    </LinearLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView24hForecast"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingTop="8dp" />
-
-    <!-- Title for 5 Day Forecast -->
-    <TextView
-        android:id="@+id/textView5DayForecastTitle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingTop="16dp"
-        android:text="@string/fui__5_day_forecast"
-        android:textStyle="bold"
-        android:textSize="20sp"
-        android:textColor="#000000"
-        android:visibility="gone"/>
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView5DaysForecast"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingTop="8dp" />
   </LinearLayout>
+
 </androidx.core.widget.NestedScrollView>

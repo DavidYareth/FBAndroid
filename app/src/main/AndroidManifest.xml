@@ -21,13 +21,17 @@
         tools:ignore="GoogleAppIndexingWarning,UnusedAttribute">
         <activity
             android:name=".weather.WeatherHistoryActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:parentActivityName=".weather.WeatherActivity" />
         <activity
             android:name=".weather.WeatherActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:parentActivityName=".ChooserActivity"
+            android:launchMode="singleTop" />
         <activity
             android:name=".ChooserActivity"
-            android:exported="true">
+            android:exported="true"
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -40,10 +44,12 @@
         </activity> <!-- Auth UI demo -->
         <activity
             android:name=".auth.AuthUiActivity"
-            android:label="@string/title_auth_activity" />
+            android:label="@string/title_auth_activity"
+            android:parentActivityName=".ChooserActivity" />
         <activity
             android:name=".auth.SignedInActivity"
-            android:label="@string/title_auth_activity" />
+            android:label="@string/title_auth_activity"
+            android:parentActivityName=".ChooserActivity" />
         <activity
             android:name=".auth.AnonymousUpgradeActivity"
             android:label="@string/title_anonymous_upgrade" /> <!-- Firestore demo -->

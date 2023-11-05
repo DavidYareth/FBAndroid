@@ -17,7 +17,7 @@ import java.util.List;
 @SuppressLint("SetTextI18n")
 public class WeatherHistoryAdapter extends RecyclerView.Adapter<WeatherHistoryAdapter.ViewHolder> {
 
-    private List<WeatherResponse> weatherHistoryList;
+    private final List<WeatherResponse> weatherHistoryList;
 
     public WeatherHistoryAdapter(List<WeatherResponse> weatherHistoryList) {
         this.weatherHistoryList = weatherHistoryList;
@@ -33,7 +33,6 @@ public class WeatherHistoryAdapter extends RecyclerView.Adapter<WeatherHistoryAd
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         WeatherResponse weather = weatherHistoryList.get(position);
-        holder.tvCity.setText("City: " + weather.name);
         holder.tvTimestamp.setText("Date: " + unixToTimestamp(weather.dt));
         holder.tvTemperature.setText("Temperature: " + kelvinToCelsius(weather.main.temp) + "ºC");
         holder.tvFeelsLike.setText("Feels Like: " + kelvinToCelsius(weather.main.feels_like) + "ºC");
@@ -41,7 +40,6 @@ public class WeatherHistoryAdapter extends RecyclerView.Adapter<WeatherHistoryAd
         holder.tvWeatherDescription.setText("Weather: " + weather.weather.get(0).description);
         holder.tvWindSpeed.setText("Wind Speed: " + msToKmh(weather.wind.speed) + " km/h");
         holder.tvCloudiness.setText("Cloudiness: " + weather.clouds.all + "%");
-        holder.tvCountry.setText("Country: " + weather.sys.country);
     }
 
     @Override
@@ -54,7 +52,6 @@ public class WeatherHistoryAdapter extends RecyclerView.Adapter<WeatherHistoryAd
 
         public ViewHolder(View itemView) {
             super(itemView);
-            tvCity = itemView.findViewById(R.id.tvCity);
             tvTimestamp = itemView.findViewById(R.id.tvTimestamp);
             tvTemperature = itemView.findViewById(R.id.tvTemperature);
             tvFeelsLike = itemView.findViewById(R.id.tvFeelsLike);
@@ -62,7 +59,6 @@ public class WeatherHistoryAdapter extends RecyclerView.Adapter<WeatherHistoryAd
             tvWeatherDescription = itemView.findViewById(R.id.tvWeatherDescription);
             tvWindSpeed = itemView.findViewById(R.id.tvWindSpeed);
             tvCloudiness = itemView.findViewById(R.id.tvCloudiness);
-            tvCountry = itemView.findViewById(R.id.tvCountry);
         }
     }
 

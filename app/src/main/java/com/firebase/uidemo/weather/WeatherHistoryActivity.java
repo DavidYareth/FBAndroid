@@ -44,7 +44,6 @@ public class WeatherHistoryActivity extends AppCompatActivity {
 
         String passedLocation = getIntent().getStringExtra("location");
         if(passedLocation != null && !passedLocation.isEmpty()) {
-            tvLocationTitle.setText(passedLocation);  // Set the title
             loadWeatherHistoryForCity(passedLocation);
         } else {
             Toast.makeText(this, "No location provided", Toast.LENGTH_SHORT).show();
@@ -59,7 +58,8 @@ public class WeatherHistoryActivity extends AppCompatActivity {
                     WeatherResponse weatherResponse = document.toObject(WeatherResponse.class);
                     weatherResponses.add(weatherResponse);
                 }
-                // Update the RecyclerView with the fetched data
+                String location = weatherResponses.get(0).name + ", " + weatherResponses.get(0).sys.country;
+                tvLocationTitle.setText(location);
                 weatherHistoryAdapter = new WeatherHistoryAdapter(weatherResponses);
                 recyclerViewHistory.setAdapter(weatherHistoryAdapter);
             } else {
