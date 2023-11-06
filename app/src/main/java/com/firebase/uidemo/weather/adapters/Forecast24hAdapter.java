@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.firebase.uidemo.R;
@@ -20,6 +21,7 @@ public class Forecast24hAdapter extends RecyclerView.Adapter<Forecast24hAdapter.
         this.forecastData = forecastData;
     }
 
+    @NonNull
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_24h_forecast, parent, false);
@@ -42,7 +44,7 @@ public class Forecast24hAdapter extends RecyclerView.Adapter<Forecast24hAdapter.
         return forecastData.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView textTime, textTemp, textDescription;
 
         public ViewHolder(View itemView) {

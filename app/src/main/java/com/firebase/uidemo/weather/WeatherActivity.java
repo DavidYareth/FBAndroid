@@ -105,30 +105,29 @@ public class WeatherActivity extends AppCompatActivity {
         recyclerView5DaysForecast.setLayoutManager(new LinearLayoutManager(this));
         recyclerView5DaysForecast.setAdapter(forecast5DaysAdapter);
 
-        buttonFetch.setOnClickListener(v -> {
-            if (editTextLocation.getText().toString().isEmpty()) {
-                getCurrentLocationAndFetchWeather();
-            } else {
-                fetchWeatherData(editTextLocation.getText().toString());
-            }
-        });
-
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION_PERMISSION_CODE);
         } else {
             getCurrentLocationAndFetchWeather();
         }
+
+
+        buttonFetch.setOnClickListener(v -> {
+            if (editTextLocation.getText().toString().isEmpty()) {
+                Toast.makeText(this, "Please enter a location", Toast.LENGTH_SHORT).show();
+            } else {
+                fetchWeatherData(editTextLocation.getText().toString());
+            }
+        });
     }
 
     private void checkUserAuthentication() {
         FirebaseUser user = mAuth.getCurrentUser();
         if (user == null) {
-            // User is not signed in. Redirect to AuthUIActivity and show toast
             Toast.makeText(this, "You must be signed in to use this functionality.", Toast.LENGTH_SHORT).show();
             startActivity(new Intent(this, AuthUiActivity.class));
             finish();
         }
-        // If the user is signed in, the app continues as normal.
     }
 
     @Override
@@ -278,29 +277,16 @@ public class WeatherActivity extends AppCompatActivity {
         layoutCurrentWeather.setVisibility(View.VISIBLE);
 
         storeWeatherInFirestore(weather);
-        storeWeatherInRealtime(weather);
     }
 
     private void storeWeatherInFirestore(WeatherResponse weather) {
-        String documentId = weather.name + "_" + weather.dt;
+        String documentId = weather.name + " [" + weather.dt + "]";
 
         firestore.collection("currentWeather")
                 .document(documentId)
                 .set(weather)
                 .addOnSuccessListener(aVoid -> Log.d("Firestore", "Weather successfully written!"))
                 .addOnFailureListener(e -> Log.w("Firestore", "Error writing document", e));
-    }
-
-    private void storeWeatherInRealtime(WeatherResponse weather) {
-        String documentId = weather.name + "_" + weather.dt;
-
-        FirebaseDatabase.getInstance()
-                .getReference()
-                .child("currentWeather")
-                .child(documentId)
-                .setValue(weather)
-                .addOnSuccessListener(aVoid -> Log.d("RealtimeDb", "Weather successfully written!"))
-                .addOnFailureListener(e -> Log.w("RealtimeDb", "Error writing document", e));
     }
 
     private void fetch5Day3HourForecast(Call<FiveDayForecastResponse> call) {
@@ -353,25 +339,34 @@ public class WeatherActivity extends AppCompatActivity {
 
     private List<FiveDayForecastResponse.ForecastData> get24hForecastData(Map<String, List<FiveDayForecastResponse.ForecastData>> dateToForecastDataMap) {
         List<FiveDayForecastResponse.ForecastData> result = new ArrayList<>();
-        int counter = 0;
-
-        // Get the current hour to filter out past forecast data
         int currentHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+
+        boolean startedCollecting = false;
+        int counter = 0;
 
         for (List<FiveDayForecastResponse.ForecastData> dailyForecasts : dateToForecastDataMap.values()) {
             for (FiveDayForecastResponse.ForecastData data : dailyForecasts) {
-                String time = data.dt_txt.split(" ")[1];  // Extracts "15:00:00" from "2023-11-01 15:00:00"
+                String time = data.dt_txt.split(" ")[1];
                 int forecastHour = Integer.parseInt(time.split(":")[0]);
-
-                if ((forecastHour >= currentHour && counter < 8) || counter > 0 && counter < 8) {
+                if (forecastHour > currentHour && !startedCollecting) {
+                    startedCollecting = true;
+                }
+                if (startedCollecting) {
                     result.add(data);
                     counter++;
                 }
+                if (counter >= 8) {
+                    break;
+                }
+            }
+            if (counter == 8) {
+                break;
             }
         }
 
         return result;
     }
+
 
 
     private int kelvinToCelsius(double kelvin) {

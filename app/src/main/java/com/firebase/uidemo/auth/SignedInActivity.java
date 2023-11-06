@@ -15,7 +15,6 @@
 package com.firebase.uidemo.auth;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -29,18 +28,12 @@ import com.firebase.ui.auth.util.ExtraConstants;
 import com.firebase.uidemo.R;
 import com.firebase.uidemo.databinding.SignedInLayoutBinding;
 import com.firebase.uidemo.storage.GlideApp;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.EmailAuthProvider;
-import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthProvider;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.GoogleAuthProvider;
-import com.google.firebase.auth.PhoneAuthProvider;
-import com.google.firebase.auth.TwitterAuthProvider;
 import com.google.firebase.auth.UserInfo;
 
 import java.util.ArrayList;
@@ -50,8 +43,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
-
-import static com.firebase.ui.auth.AuthUI.EMAIL_LINK_PROVIDER;
 
 public class SignedInActivity extends AppCompatActivity {
     private static final String TAG = "SignedInActivity";
@@ -124,6 +115,7 @@ public class SignedInActivity extends AppCompatActivity {
 
     private void populateProfile(@Nullable IdpResponse response) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        assert user != null;
         if (user.getPhotoUrl() != null) {
             GlideApp.with(this)
                     .load(user.getPhotoUrl())
@@ -155,11 +147,8 @@ public class SignedInActivity extends AppCompatActivity {
                         providers.add(getString(R.string.providers_email));
                         break;
                     case FirebaseAuthProvider.PROVIDER_ID:
-                        // This is the provider ID for anonymous accounts
                         providers.add(getString(R.string.providers_anonymous));
                         break;
-                    default:
-                        // No need to add any other providers
                 }
             }
         }

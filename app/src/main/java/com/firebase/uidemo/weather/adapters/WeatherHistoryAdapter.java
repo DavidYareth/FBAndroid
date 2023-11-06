@@ -48,7 +48,7 @@ public class WeatherHistoryAdapter extends RecyclerView.Adapter<WeatherHistoryAd
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView tvCity, tvTimestamp,tvTemperature, tvFeelsLike, tvHumidity, tvWeatherDescription, tvWindSpeed, tvCloudiness, tvCountry;
+        TextView tvTimestamp,tvTemperature, tvFeelsLike, tvHumidity, tvWeatherDescription, tvWindSpeed, tvCloudiness;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -70,7 +70,6 @@ public class WeatherHistoryAdapter extends RecyclerView.Adapter<WeatherHistoryAd
         return (int) Math.round(ms * 3.6);
     }
 
-    // get the timestamp from the unix time in a readable format
     private String unixToTimestamp(long unix) {
         return java.text.DateFormat.getDateTimeInstance().format(unix * 1000);
     }

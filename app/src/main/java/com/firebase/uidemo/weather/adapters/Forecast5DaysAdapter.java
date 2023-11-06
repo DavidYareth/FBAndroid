@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.firebase.uidemo.R;
@@ -29,6 +30,7 @@ public class Forecast5DaysAdapter extends RecyclerView.Adapter<Forecast5DaysAdap
         this.dateToForecastDataMap = dateToForecastDataMap;
     }
 
+    @NonNull
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_5_day_forecast, parent, false);
@@ -56,7 +58,7 @@ public class Forecast5DaysAdapter extends RecyclerView.Adapter<Forecast5DaysAdap
         return dateToForecastDataMap.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView textDate, textTempMin, textTempMax;
         public ViewHolder(View itemView) {
             super(itemView);
