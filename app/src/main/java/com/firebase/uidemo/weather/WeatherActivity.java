@@ -144,7 +144,7 @@ public class WeatherActivity extends AppCompatActivity {
                 intent.putExtra("location", location);
                 startActivity(intent);
             } else {
-                Toast.makeText(this, "Location is not set", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Please fetch weather data for a location first.", Toast.LENGTH_SHORT).show();
             }
             return true;
         }
